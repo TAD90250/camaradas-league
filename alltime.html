@@ -23,8 +23,8 @@ L.boot("alltime.html", "All-time stats", async (meta) => {
   $("#pageSub").textContent = "Every owner ranked, " + meta.firstYear + "–" + meta.currentSeason;
   const NOTES = {
     reg: "Showing regular-season games only.",
-    regpo: "Showing regular-season and playoff games. Consolation games are not counted, the same as the record book.",
-    po: "Showing playoff games only (quarterfinals, semifinals, 3rd-place game and championship). Rate tables rank owners with at least 4 playoff games.",
+    regpo: "Showing regular-season and playoff games. The 3rd-place game and consolation games are not counted, the same as the record book.",
+    po: "Showing playoff games only (quarterfinals, semifinals and championship; the 3rd-place game is not counted). Rate tables rank owners with at least 4 playoff games.",
     all: "Showing every game, including consolation-bracket games."
   };
   const q = new URLSearchParams(location.search).get("scope");

@@ -22,8 +22,8 @@ L.boot("records.html", "Record book", async (meta) => {
   $("#pageSub").textContent = "Every game and season on record, " + meta.firstYear + "–" + meta.currentSeason;
   const NOTES = {
     reg: "Showing regular-season games only. Season tables use regular-season records.",
-    regpo: "Showing regular-season and playoff games (including the 3rd-place game). Consolation games are not counted.",
-    po: "Showing playoff games only (quarterfinals, semifinals, 3rd-place game and championship). Season tables cover playoff games only, and the bar for player averages is lower (5 starts).",
+    regpo: "Showing regular-season and playoff games (quarterfinals, semifinals and championship). The 3rd-place game and consolation games are not counted.",
+    po: "Showing playoff games only (quarterfinals, semifinals and championship; the 3rd-place game is not counted). Season tables cover playoff games only, and the bar for player averages is lower (5 starts).",
     all: "Showing every game, including consolation-bracket games."
   };
   const q = new URLSearchParams(location.search).get("scope");
