@@ -2,7 +2,7 @@
 
 Standings, champions, records and owner pages for the Camaradas fantasy football league: 12 seasons (2015 to 2026) and 16 owners.
 
-**Live site:** https://tad90250.github.io/camaradas-league/
+**Live site:** https://YOUR-USERNAME.github.io/camaradas-league/
 
 ## What's on the site
 
@@ -12,7 +12,7 @@ Standings, champions, records and owner pages for the Camaradas fantasy football
 | Standings | Final standings for every season, with champion and runner-up |
 | Owners | All-time leaderboard, plus a profile page for each owner |
 | All-Time | Seven ranked tables: wins, losses, win %, points for, points for per game, points against, points against per game. Switch between regular season, regular season plus playoffs, and all games |
-| Records | Highest and lowest scores, biggest blowouts, closest finishes, best and worst seasons, biggest player games, and top-10 players by career points, average points per start, and games started |
+| Records | Highest and lowest scores, biggest blowouts, closest finishes, best and worst seasons, biggest player games, career points by player |
 | Head-to-Head | Owner-vs-owner matrix and a two-owner comparison |
 | Draft | Every draft pick on record, by year |
 | Photos | Password-protected photo vault |
