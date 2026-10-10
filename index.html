@@ -85,6 +85,7 @@ L.boot("index.html", null, async (meta) => {
   $("#cur th:nth-child(2)").className = "l";
 
   const links = [["standings.html", "Standings", "Every season, final tables"], ["owners.html", "Owners", "All-time leaderboard & profiles"],
+    ["alltime.html", "All-time stats", "Wins, losses, win % and points, ranked"],
     ["records.html", "Record book", "Highest scores, blowouts, best seasons"], ["h2h.html", "Head-to-head", "Who owns who"],
     ["draft.html", "Draft history", "Every pick we have on record"], ["photos.html", "Photo vault 🔒", "Password required"]];
   $("#links").innerHTML = links.map(([h, t, d]) => '<a class="card linkcard" href="' + h + '"><b>' + t + "</b><span>" + d + "</span></a>").join("");
