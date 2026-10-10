@@ -5,7 +5,7 @@
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g,
     (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
-  const NAV = [["index.html", "Home"], ["standings.html", "Standings"], ["owners.html", "Owners"],
+  const NAV = [["index.html", "Home"], ["standings.html", "Standings"], ["owners.html", "Owners"], ["alltime.html", "All-Time"],
     ["records.html", "Records"], ["h2h.html", "Head-to-Head"], ["draft.html", "Draft"], ["photos.html", "Photos 🔒"]];
 
   async function getJSON(path) {

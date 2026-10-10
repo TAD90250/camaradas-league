@@ -1,4 +1,3 @@
-[README.md](https://github.com/user-attachments/files/33274178/README.md)
 # Camaradas League
 
 Standings, champions, records and owner pages for the Camaradas fantasy football league: 12 seasons (2015 to 2026) and 16 owners.
