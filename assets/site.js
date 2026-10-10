@@ -19,8 +19,8 @@
   const pct = (p) => (p == null ? "–" : (p * 100).toFixed(1) + "%");
   const num = (n, d) => (n == null ? "–" : Number(n).toLocaleString(undefined,
     { minimumFractionDigits: d == null ? 1 : d, maximumFractionDigits: d == null ? 1 : d }));
-  const ownerLink = (slug, nick) => slug
-    ? '<a href="owner.html?o=' + encodeURIComponent(slug) + '">' + esc(nick) + "</a>" : esc(nick);
+  const ownerLink = (slug, nick, scope) => slug
+    ? '<a href="owner.html?o=' + encodeURIComponent(slug) + (scope ? "&scope=" + encodeURIComponent(scope) : "") + '">' + esc(nick) + "</a>" : esc(nick);
   const ordinal = (n) => { const s = ["th", "st", "nd", "rd"], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); };
 
   const RESULT_BADGE = (r) => {
@@ -47,6 +47,7 @@
   }
 
   function fail(err) {
+    if (window.console) console.error(err && err.stack ? err.stack : err);
     const m = $("main .wrap") || $("main");
     const local = location.protocol === "file:";
     m.innerHTML = '<div class="error"><b>Could not load the league data.</b><br>' +
@@ -87,5 +88,22 @@
     });
   }
 
-  window.L = { $, $$, esc, getJSON, rec, pct, num, ownerLink, ordinal, RESULT_BADGE, boot, sortable, chrome, fail };
+  /* "Which games count" buttons shared by the pages that offer them.
+     scopes: [{key,label}], current: key, onPick(key) is called after the buttons redraw. */
+  const SCOPE_NOTES = {
+    reg: "Showing regular-season games only.",
+    regpo: "Showing regular-season and playoff games (quarterfinals, semifinals and championship). The 3rd-place game and consolation games are not counted.",
+    po: "Showing playoff games only (quarterfinals, semifinals and championship; the 3rd-place game is not counted).",
+    all: "Showing every game, including the 3rd-place game and consolation-bracket games."
+  };
+  function scopePills(el, scopes, current, onPick) {
+    el.innerHTML = scopes.map((s) => '<button class="pill' + (s.key === current ? " on" : "") + '" data-k="' + s.key + '">' + esc(s.label) + "</button>").join("");
+    $$(".pill", el).forEach((b) => b.addEventListener("click", () => onPick(b.dataset.k)));
+  }
+  const pickScope = (scopes, def) => {
+    const q = new URLSearchParams(location.search).get("scope");
+    return (scopes.find((s) => s.key === q) || scopes.find((s) => s.key === def) || scopes[0]).key;
+  };
+
+  window.L = { SCOPE_NOTES, scopePills, pickScope, $, $$, esc, getJSON, rec, pct, num, ownerLink, ordinal, RESULT_BADGE, boot, sortable, chrome, fail };
 })();

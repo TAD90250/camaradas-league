@@ -43,7 +43,7 @@ The site refreshes about a minute after the upload is committed.
 
 - 2016 Yahoo "Bye Week" placeholder games are left out, as if those weeks were byes.
 - Some Yahoo-era drafts are incomplete. Those years show a "Partial draft" notice.
-- The Record book and All-Time pages have three buttons (regular season, regular season plus playoffs, playoffs only, everything) and open on regular season plus playoffs, which leaves out the 3rd-place game and consolation-bracket games (only "all games" counts them).
+- The Owners page, every owner page, Head-to-Head, the Record book and All-Time pages all have the same four buttons (regular season, regular season plus playoffs, playoffs only, everything) and open on regular season plus playoffs, which leaves out the 3rd-place game and consolation-bracket games (only "all games" counts them).
 - Points are not adjusted for the move from Yahoo to Sleeper scoring in 2025, or for season length (14 to 17 games). Percentage and per-game tables only rank owners with at least 14 games (4 for playoffs only).
 - Player stats count points scored while a player was in a starting lineup.
 
