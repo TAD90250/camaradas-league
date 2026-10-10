@@ -209,3 +209,9 @@ select, input[type=password], input[type=text] {
 footer { color: var(--muted); font-size: .85rem; padding: 22px 0 34px; border-top: 1px solid var(--line); text-align: center; }
 .loading { color: var(--muted); padding: 30px; text-align: center; }
 @media print { .topbar, footer, .pills, .owner-nav { display: none; } body { background: #fff; } }
+
+/* record watch feed */
+.sub-title { margin: 0 0 10px; font-size: 1rem; }
+.feed { list-style: none; margin: 0; padding: 0; }
+.feed li { padding: 9px 0; border-top: 1px solid var(--line); line-height: 1.45; }
+.feed li:first-child { border-top: 0; padding-top: 0; }

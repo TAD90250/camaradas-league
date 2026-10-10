@@ -38,6 +38,15 @@
       <p class="note"><a href="standings.html">All seasons &rarr;</a></p>
     </section>
 
+    <section id="watch" hidden>
+      <h2 class="sec-title">Record watch <small id="watchSub"></small></h2>
+      <div class="grid g2">
+        <div class="card"><div class="pad"><h3 class="sub-title">Record book</h3><div id="wRec"></div></div></div>
+        <div class="card"><div class="pad"><h3 class="sub-title">All-time stats</h3><div id="wAt"></div></div></div>
+      </div>
+      <p class="note" id="watchNote"></p>
+    </section>
+
     <section>
       <h2 class="sec-title">Explore</h2>
       <div class="grid g3" id="links"></div>
@@ -83,6 +92,28 @@ L.boot("index.html", null, async (meta) => {
     cur.standings.map((t) => "<tr><td class='rank'>" + t.rank + "</td><td class='l'>" + ownerLink(t.slug, t.nick) + "</td><td class='l'>" + esc(t.team) +
       "</td><td>" + rec(t.w, t.l, t.t) + "</td><td>" + L.num(t.pf) + "</td><td>" + L.num(t.pa) + "</td></tr>").join("") + "</tbody>";
   $("#cur th:nth-child(2)").className = "l";
+
+
+  // record watch: what the latest week changed in the record book and the all-time tables
+  try {
+    const A = await getJSON("data/activity.json");
+    const multi = A.weeks.length > 1;
+    const label = A.weeks.length ? (multi ? "weeks " + A.weeks[0].week + "–" + A.weeks[A.weeks.length - 1].week : "week " + A.weeks[0].week) + ", " + A.weeks[A.weeks.length - 1].year : "";
+    $("#watchSub").textContent = "what changed in " + label;
+    const who = (e) => e.slug ? ownerLink(e.slug, e.who) : esc(e.who);
+    const wk = (e) => multi ? '<span class="muted">Wk ' + e.week + " · </span>" : "";
+    const badge = (e) => e.rank === 1 ? '<span class="badge gold">NEW RECORD</span>' : '<span class="badge blue">' + (e.prev ? "up to #" + e.rank : "new at #" + e.rank) + "</span>";
+    const rows = (list, fn, empty) => list.length ? '<ul class="feed">' + list.map(fn).join("") + "</ul>" : '<p class="muted" style="margin:0">' + empty + "</p>";
+    $("#wRec").innerHTML = rows(A.records, (e) =>
+      "<li>" + badge(e) + " <b>" + esc(e.cat) + "</b><br>" + wk(e) + who(e) + ' <span class="muted">· ' + esc(e.detail) + (e.prev ? " (was #" + e.prev + ")" : "") + "</span></li>",
+      "No records fell in " + label + ".");
+    $("#wAt").innerHTML = rows(A.alltime, (e) =>
+      "<li>" + (e.rank === 1 ? '<span class="badge gold">TAKES THE LEAD</span>' : '<span class="badge blue">up to #' + e.rank + "</span>") + " <b>" + esc(e.cat) + "</b><br>" + wk(e) + who(e) +
+      ' <span class="muted">· ' + esc(e.value) + " (was #" + e.prev + ")</span></li>",
+      "No changes to the all-time tables in " + label + ".");
+    $("#watchNote").innerHTML = esc(A.scope) + " games, consolation not counted. Per-game and percentage tables only show a change when the leader changes. See the <a href='records.html'>record book</a> and <a href='alltime.html'>all-time page</a>.";
+    $("#watch").hidden = false;
+  } catch (e) { /* no activity file yet */ }
 
   const links = [["standings.html", "Standings", "Every season, final tables"], ["owners.html", "Owners", "All-time leaderboard & profiles"],
     ["alltime.html", "All-time stats", "Wins, losses, win % and points, ranked"],

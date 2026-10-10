@@ -2,17 +2,17 @@
 
 Standings, champions, records and owner pages for the Camaradas fantasy football league: 12 seasons (2015 to 2026) and 16 owners.
 
-**Live site:** https://YOUR-USERNAME.github.io/camaradas-league/
+**Live site:** https://tad90250.github.io/camaradas-league/
 
 ## What's on the site
 
 | Page | What it shows |
 |---|---|
-| Home | Hall of champions, current standings, league photos, shortcuts to every owner |
+| Home | Hall of champions, current standings, a "Record watch" box showing which records and all-time standings changed in the latest week, league photos, shortcuts to every owner |
 | Standings | Final standings for every season, with champion and runner-up |
 | Owners | All-time leaderboard, plus a profile page for each owner |
-| All-Time | Seven ranked tables: wins, losses, win %, points for, points for per game, points against, points against per game. Switch between regular season, regular season plus playoffs, and all games |
-| Records | Highest and lowest scores, biggest blowouts, closest finishes, best and worst seasons, biggest player games, career points by player |
+| All-Time | Seven ranked tables: wins, losses, win %, points for, points for per game, points against, points against per game. Switch between regular season, regular season plus playoffs, playoffs only, and all games |
+| Records | Highest and lowest scores, biggest blowouts, closest finishes, best and worst seasons, biggest player games, and top-10 players by career points, average points per start, and games started |
 | Head-to-Head | Owner-vs-owner matrix and a two-owner comparison |
 | Draft | Every draft pick on record, by year |
 | Photos | Password-protected photo vault |
@@ -40,8 +40,8 @@ The site refreshes about a minute after the upload is committed.
 
 - 2016 Yahoo "Bye Week" placeholder games are left out, as if those weeks were byes.
 - Some Yahoo-era drafts are incomplete. Those years show a "Partial draft" notice.
-- The record book and the default All-Time view leave out consolation-bracket games.
-- Points are not adjusted for the move from Yahoo to Sleeper scoring in 2025, or for season length (14 to 17 games). Percentage and per-game tables only rank owners with at least 14 games.
+- The Record book and All-Time pages have three buttons (regular season, regular season plus playoffs, playoffs only, everything) and open on regular season plus playoffs, which leaves out consolation-bracket games.
+- Points are not adjusted for the move from Yahoo to Sleeper scoring in 2025, or for season length (14 to 17 games). Percentage and per-game tables only rank owners with at least 14 games (4 for playoffs only).
 - Player stats count points scored while a player was in a starting lineup.
 
 ## Folder layout
