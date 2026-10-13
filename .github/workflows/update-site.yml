@@ -6,8 +6,8 @@ name: Update site data
 
 on:
   schedule:
-    - cron: "0 01 * * 2"    # Tuesday 01:00 UTC  (9 am Pacific in summer, 8 am in winter)
-    - cron: "0 14 * * 4"    # Thursday 14:00 UTC (8 am Pacific in summer, 7 am in winter)
+    - cron: "0 8 * * 2"     # Tuesday 08:00 UTC  (1 am Pacific in summer, 12 am in winter)
+    - cron: "0 14 * * 4"    # Thursday 14:00 UTC (7 am Pacific in summer, 6 am in winter)
   workflow_dispatch:
 
 permissions:
