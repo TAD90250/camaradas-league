@@ -31,16 +31,16 @@ L.boot("money.html", "Money due", async (meta) => {
     const summary = '<div class="grid g3" style="margin-bottom:14px"><div class="card pad"><div class="muted" style="font-size:.82rem">League owes owners (net)</div><div style="font-size:1.5rem;font-weight:800;color:var(--win)">' + usd(owedTo) + '</div></div>' +
       '<div class="card pad"><div class="muted" style="font-size:.82rem">Owners owe league (net)</div><div style="font-size:1.5rem;font-weight:800;color:var(--loss)">' + usd(owes) + '</div></div>' +
       '<div class="card pad"><div class="muted" style="font-size:.82rem">Season</div><div style="font-size:1.5rem;font-weight:800">' + cur.year + '</div><div class="muted" style="font-size:.82rem">' + (cur.complete ? "complete" : "in progress") + "</div></div></div>";
-    const table = '<div class="card table-wrap"><table><thead><tr><th>#</th><th class="l">Owner</th><th>Prizes won</th><th>Fee total</th><th>Paid in</th><th>Still owes</th><th>Net</th></tr></thead><tbody>' +
-      cur.owners.map((o, i) => "<tr><td class='rank'>" + (i + 1) + "</td><td class='l'><b>" + ownerLink(o.slug, o.nick) + "</b></td><td>" + (o.won ? usd(o.won) : dash) + "</td>" +
+    const table = '<div class="card table-wrap"><table><thead><tr><th>#</th><th class="l">Owner</th><th>Fee total</th><th>Paid</th><th>Prizes won</th><th>Net</th></tr></thead><tbody>' +
+      cur.owners.map((o, i) => "<tr><td class='rank'>" + (i + 1) + "</td><td class='l'><b>" + ownerLink(o.slug, o.nick) + "</b></td>" +
         "<td>" + (o.feeTotal == null ? '<span class="muted" title="fee not entered">' + (o.penalties ? usd(o.penalties) + " pen." : "–") + "</span>" : usd(o.feeTotal)) + "</td>" +
-        "<td>" + (o.paidIn == null ? dash : usd(o.paidIn)) + "</td><td>" + (o.owe == null ? dash : o.owe < 0 ? '<span style="color:var(--win)">' + usd(o.owe) + "</span>" : usd(o.owe)) + "</td><td>" + due(o.net) + "</td></tr>").join("") +
+        "<td>" + (o.paidIn == null ? dash : usd(o.paidIn)) + "</td><td>" + (o.won ? usd(o.won) : dash) + "</td><td>" + due(o.net) + "</td></tr>").join("") +
       "</tbody></table></div>";
     const pays = cur.payments.length ? '<section><h2 class="sec-title">Prize money already paid out</h2><div class="card table-wrap"><table><thead><tr><th class="l">Owner</th><th>Amount</th><th class="l">Note</th></tr></thead><tbody>' +
       cur.payments.map((p) => "<tr><td class='l'>" + ownerLink(p.slug, p.nick) + "</td><td>" + usd(p.amount) + "</td><td class='l muted'>" + esc(p.note) + "</td></tr>").join("") + "</tbody></table></div></section>" : "";
     $("#body").innerHTML = pills + summary + table +
-      '<p class="note"><b>Fee total</b> = the owner\'s fee plus penalties (lowest-score fees and any other penalties). <b>Still owes</b> = fee total minus what they have paid in; a negative number (green) means they have overpaid. ' +
-      '<b>Net</b> = prizes won minus what they still owe, minus any prize money already paid to them: <span style="color:var(--win)"><b>+</b> the league owes the owner</span>, <span style="color:var(--loss)"><b>\u2212</b> the owner owes the league</span>. ' +
+      '<p class="note"><b>Fee total</b> = the owner\'s fee plus penalties (lowest-score fees and any other penalties). <b>Paid</b> = what they have paid in so far. <b>Prizes won</b> = prizes won so far. ' +
+      '<b>Net</b> = Paid + Prizes won \u2212 Fee total (and minus any prize money already paid out to them): <span style="color:var(--win)"><b>+</b> the league owes the owner</span>, <span style="color:var(--loss)"><b>\u2212</b> the owner owes the league</span>. ' +
       'An owner shown with a dash has no fee entered yet, so only penalties are counted for them. See the <a href="payouts.html?y=' + cur.year + '">payouts page</a> for the winners.</p>' +
       (M.feeNote ? '<p class="note">' + esc(M.feeNote) + "</p>" : "") + pays;
     $$("#pills .pill").forEach((b) => b.addEventListener("click", () => { cur = M.seasons.find((s) => String(s.year) === b.dataset.y); history.replaceState(null, "", "?y=" + cur.year); draw(); }));
