@@ -11,6 +11,7 @@ Standings, champions, records and owner pages for the Camaradas fantasy football
 | Home | Hall of champions, current standings, a "Record watch" box showing which records and all-time standings changed in the latest week, league photos, shortcuts to every owner |
 | Standings | Final standings for every season, with champion and runner-up |
 | Owners | All-time leaderboard, plus a profile page for each owner |
+| Power | Looks forward only. Each team gets a 0-100 power score: projected best lineup 75% (Sleeper projections for every week still to play, ranked each week), bench depth 5%, record and standings 15%, points scored so far 5%. Weeks 1-14 and the Playoffs (weeks 15-17) are separate tables, current season only; the Playoffs table is 100% projected lineup. Change the weights in `league_settings.json` (`powerWeights`, separately for `early` and `late`). Refresh every Thursday with `python fetch_projections.py` then `python export_site_data.py` |
 | All-Time | Seven ranked tables: wins, losses, win %, points for, points for per game, points against, points against per game. Switch between regular season, regular season plus playoffs, playoffs only, and all games |
 | Records | Highest and lowest scores, biggest blowouts, closest finishes, best and worst seasons, biggest player games, and top-10 players by career points, average points per start, and games started |
 | Head-to-Head | Owner-vs-owner matrix and a two-owner comparison |
