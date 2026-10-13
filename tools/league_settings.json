@@ -1,0 +1,258 @@
+{
+  "_help": "League money settings. confirmed: true hides the 'placeholder' notice. seasonPayouts are the end-of-season prizes. weeklyPayouts is the schedule of weekly prizes (kind says how the winner is found; manual ones are entered in manualWinners). lowestPenalty/lowestCount: the lowest N scorers of each regular-season week pay that amount. fees: each owner's base fee and how much they have paid in so far (Total = base + penalties; Owe = Total - paid; a negative Owe means they overpaid). lowestOverrides: use this list instead of the computed lowest scorers for a week. penalties: extra fees, e.g. a hurt or bye-week player left in the lineup (amount is what the owner pays). payments: prize money the league has already paid out to an owner (amount > 0). toiletBowlWinner: e.g. {\"2026\": \"chaps\"} once it is decided.",
+  "confirmed": true,
+  "moneyStartYear": 2026,
+  "seasonPayouts": {
+    "first": 760,
+    "second": 260,
+    "third": 120,
+    "regSeasonFirst": 100,
+    "mostPoints": 100
+  },
+  "lowestPenalty": 5,
+  "lowestCount": 2,
+  "missPlayoffsPenalty": 10,
+  "feeNote": "League fee is $100 plus $71 for the weekly prizes. A hurt or bye-week player left in the lineup costs $20, added to the 1st place prize.",
+  "weeklyPayouts": [
+    {
+      "id": "undefeated",
+      "kind": "undefeated",
+      "week": null,
+      "amount": 52,
+      "label": "Last team to lose its undefeated record",
+      "rule": "If teams lose their last unbeaten game in the same week, the tied teams keep going until one loses and the other does not; the one that does not lose wins."
+    },
+    {
+      "id": "w1",
+      "kind": "highScore",
+      "week": 1,
+      "amount": 50,
+      "label": "Week 1: highest score",
+      "rule": "Tie-breaker: the team with the highest-scoring player."
+    },
+    {
+      "id": "w2",
+      "kind": "topPos",
+      "week": 2,
+      "amount": 50,
+      "label": "Week 2: highest-scoring starter who is not a QB",
+      "rule": ""
+    },
+    {
+      "id": "w3",
+      "kind": "topPos",
+      "pos": "TE",
+      "week": 3,
+      "amount": 50,
+      "label": "Week 3: highest-scoring starting TE",
+      "rule": ""
+    },
+    {
+      "id": "w4",
+      "kind": "manual",
+      "week": 4,
+      "amount": 50,
+      "label": "Week 4: most touchdowns by the starting lineup",
+      "rule": "Passing touchdowns count. A tie-breaker extends to the next week. Enter the winner in manualWinners."
+    },
+    {
+      "id": "w5",
+      "kind": "beatsHighLoser",
+      "week": 5,
+      "amount": 50,
+      "label": "Week 5: beat the highest-scoring losing team",
+      "rule": "The prize goes to the team that beat the team with the highest score among that week's losers."
+    },
+    {
+      "id": "w6",
+      "kind": "highScore",
+      "week": 6,
+      "amount": 50,
+      "label": "Week 6: highest score",
+      "rule": ""
+    },
+    {
+      "id": "w7",
+      "kind": "firstAfter",
+      "week": 7,
+      "amount": 100,
+      "label": "After week 7: 1st place in the standings",
+      "rule": ""
+    },
+    {
+      "id": "w8",
+      "kind": "blowout",
+      "week": 8,
+      "amount": 50,
+      "label": "Week 8: biggest blowout",
+      "rule": "The winner of the largest margin of victory."
+    },
+    {
+      "id": "w9",
+      "kind": "topPos",
+      "pos": "K",
+      "week": 9,
+      "amount": 50,
+      "label": "Week 9: highest-scoring starting kicker",
+      "rule": ""
+    },
+    {
+      "id": "w10",
+      "kind": "topPos",
+      "pos": "QB",
+      "week": 10,
+      "amount": 50,
+      "label": "Week 10: highest-scoring starting QB",
+      "rule": ""
+    },
+    {
+      "id": "w11",
+      "kind": "topPos",
+      "pos": "WR",
+      "week": 11,
+      "amount": 50,
+      "label": "Week 11: highest-scoring starting WR",
+      "rule": ""
+    },
+    {
+      "id": "w12",
+      "kind": "topPos",
+      "pos": "RB",
+      "week": 12,
+      "amount": 50,
+      "label": "Week 12: highest-scoring starting RB",
+      "rule": ""
+    },
+    {
+      "id": "w13",
+      "kind": "topPos",
+      "pos": "DST",
+      "week": 13,
+      "amount": 50,
+      "label": "Week 13: highest-scoring starting DST",
+      "rule": ""
+    },
+    {
+      "id": "w14a",
+      "kind": "seasonTopNonQB",
+      "week": 14,
+      "amount": 50,
+      "label": "End of week 14: team of the top-scoring non-QB player of the season",
+      "rule": "The player with the most points on the season (not a QB); the prize goes to the team that has him."
+    },
+    {
+      "id": "w14b",
+      "kind": "bestRankLoser",
+      "week": 14,
+      "amount": 50,
+      "label": "End of week 14: beat the best-ranked loser of the week",
+      "rule": "The prize goes to the team that beat the highest-ranked (by regular-season standings) team that lost in week 14."
+    }
+  ],
+  "manualWinners": [
+    {
+      "year": 2026,
+      "week": 4,
+      "kind": "w4",
+      "winner": "felipe"
+    }
+  ],
+  "lowestOverrides": [
+    {
+      "year": 2026,
+      "week": 1,
+      "owners": [
+        "rooney",
+        "callito"
+      ],
+      "note": "As recorded by the commissioner"
+    }
+  ],
+  "penalties": [
+    {
+      "year": 2026,
+      "week": 1,
+      "owner": "pepe",
+      "amount": 20,
+      "note": "Hurt or bye-week player left on the roster"
+    }
+  ],
+  "fees": [
+    {
+      "owner": "yeyo",
+      "base": 96,
+      "paid": 0
+    },
+    {
+      "owner": "winnie",
+      "base": 96,
+      "paid": 0
+    },
+    {
+      "owner": "varo",
+      "base": 96,
+      "paid": 106
+    },
+    {
+      "owner": "isaias",
+      "base": 96,
+      "paid": 0
+    },
+    {
+      "owner": "felipe",
+      "base": 11,
+      "paid": 0
+    },
+    {
+      "owner": "lopez",
+      "base": 96,
+      "paid": 0
+    },
+    {
+      "owner": "amir",
+      "base": 96,
+      "paid": 0
+    },
+    {
+      "owner": "paco",
+      "base": 96,
+      "paid": 0
+    },
+    {
+      "owner": "rooney",
+      "base": 196,
+      "paid": 0
+    },
+    {
+      "owner": "pepe",
+      "base": 96,
+      "paid": 0
+    },
+    {
+      "owner": "callito",
+      "base": 196,
+      "paid": 0
+    },
+    {
+      "owner": "chaps",
+      "base": 96,
+      "paid": 0
+    }
+  ],
+  "toiletBowlWinner": {},
+  "payments": [],
+  "powerWeights": {
+    "early": {
+      "lineup": 75,
+      "bench": 5,
+      "record": 15,
+      "points": 5
+    },
+    "late": {
+      "lineup": 100,
+      "bench": 0,
+      "record": 0,
+      "points": 0
+    }
+  }
+}
