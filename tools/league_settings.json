@@ -176,6 +176,11 @@
       "amount": 20,
       "note": "Hurt or bye-week player left on the roster"
     }
+     {"year": 2026, 
+       "week": 6, 
+       "owner": "amir", 
+       "amount": 20, 
+       "note": "Hurt or bye-week player left on the roster"}
   ],
   "fees": [
     {
