@@ -101,7 +101,7 @@ DEFAULT_SETTINGS = {
               "weeklyPayouts is the schedule of weekly prizes (kind says how the winner is found; manual ones are entered in manualWinners). "
               "lowestPenalty/lowestCount: the lowest N scorers of each regular-season week pay that amount. fees: each owner's base fee and "
               "how much they have paid in so far (Total = base + penalties; Owe = Total - paid; a negative Owe means they overpaid). "
-              "powerWeights: how much each part counts in the Power Rankings score (projected lineup, bench depth, record and standings, points scored), separately for weeks 1-14 (early) and the playoffs (late); each set is scaled to add up to 100. lowestOverrides: use this list instead of the computed lowest scorers for a week. penalties: extra fees, e.g. a hurt or bye-week player left in the lineup (amount is what the owner pays). "
+              "powerWeights: how much each part counts in the Power Rankings score (projected lineup, recent form = weekly scoring rank over the last 3 played weeks, bench depth, record and standings, points scored), separately for weeks 1-14 (early) and the playoffs (late); each set is scaled to add up to 100. lowestOverrides: use this list instead of the computed lowest scorers for a week. penalties: extra fees, e.g. a hurt or bye-week player left in the lineup (amount is what the owner pays). "
               "payments: prize money the league has already paid out to an owner (amount > 0). "
               "toiletBowlWinner: e.g. {\"2026\": \"chaps\"} once it is decided."),
     "confirmed": True,
@@ -146,8 +146,8 @@ DEFAULT_SETTINGS = {
         {"owner": "rooney", "base": 196, "paid": 0}, {"owner": "pepe", "base": 96, "paid": 0},
         {"owner": "callito", "base": 196, "paid": 50}],
     "toiletBowlWinner": {},
-    "powerWeights": {"early": {"lineup": 75, "bench": 5, "record": 15, "points": 5},
-                     "late": {"lineup": 100, "bench": 0, "record": 0, "points": 0}},
+    "powerWeights": {"early": {"lineup": 65, "recent": 10, "bench": 5, "record": 15, "points": 5},
+                     "late": {"lineup": 90, "recent": 10, "bench": 0, "record": 0, "points": 0}},
     "payments": []}
 
 DEFAULT_RULES = """# Rules
@@ -1010,13 +1010,16 @@ def build(workbook, out_dir):
     # weights per table: "early" = weeks 1-14, "late" = playoffs (weeks 15-17). A flat powerWeights dict
     # (no early/late keys) is used for the early table, and the playoffs table stays 100% projected lineup.
     pw_cfg = settings.get("powerWeights") or {}
-    PW_DEFAULT = {"early": {"lineup": 75, "bench": 5, "record": 15, "points": 5},
-                  "late": {"lineup": 100, "bench": 0, "record": 0, "points": 0}}
+    PW_DEFAULT = {"early": {"lineup": 65, "recent": 10, "bench": 5, "record": 15, "points": 5},
+                  "late": {"lineup": 90, "recent": 10, "bench": 0, "record": 0, "points": 0}}
+    RECENT_N = 3                                       # "recent form" = weekly scoring rank over the last 3 played weeks
 
     def block_weights(bkey):
         src = pw_cfg.get(bkey) if ("early" in pw_cfg or "late" in pw_cfg) else (pw_cfg if bkey == "early" else None)
         src = src or PW_DEFAULT[bkey]
-        w_ = {k: float(src.get(k, 0)) for k in ("lineup", "bench", "record", "points")}
+        if "recent" not in src:                        # an older settings file without recent form: use the current defaults
+            src = PW_DEFAULT[bkey]
+        w_ = {k: float(src.get(k, 0)) for k in ("lineup", "recent", "bench", "record", "points")}
         tot_ = sum(w_.values()) or 1.0
         return w_, tot_, {k: round(v / tot_ * 100, 1) for k, v in w_.items()}
     BENCH_N = 4                                        # best leftover players that make up "bench depth"
@@ -1119,6 +1122,20 @@ def build(workbook, out_dir):
                              "standing": i + 1 if g_ else None,
                              "pf": rnd(recs[ts][3], 1), "pfScore": round(pf_rank[ts][1] if g_ else 50.0, 1)}
 
+    # recent form: each team's scoring rank in each of the last RECENT_N played weeks of this season
+    # (any game type), 1st = 100 / last = 0, averaged. Teams with no games yet sit at 50.
+    recent_score, recent_weeks = {}, []
+    if ts_of:
+        pts_by_week = defaultdict(dict)                 # week -> {tsid: points}
+        for r in rows:
+            if r["y"] == latest_year and r["ts"] in ts_of:
+                pts_by_week[r["w"]][r["ts"]] = r["pf"]
+        recent_weeks = sorted(pts_by_week)[-RECENT_N:]
+        for w in recent_weeks:
+            for ts, (rk, sc) in rank_scores(pts_by_week[w]).items():
+                d_ = recent_score.setdefault(ts, {"sum": 0.0, "n": 0, "ranks": {}})
+                d_["sum"] += sc; d_["n"] += 1; d_["ranks"][str(w)] = rk
+
     if pr_lineup:
         for w in sorted(pr_lineup):
             ls, bs = rank_scores(pr_lineup[w]), rank_scores(pr_bench[w])
@@ -1148,9 +1165,12 @@ def build(workbook, out_dir):
             t["benchScore"] = round(t["bs"] / k, 1)
             t["recordScore"] = rs.get("record", 50.0)
             t["pointsScore"] = rs.get("pfScore", 50.0)
+            rf = recent_score.get(ts_by_slug.get(sl))
+            t["recentScore"] = round(rf["sum"] / rf["n"], 1) if rf else 50.0
+            t["recentRanks"] = rf["ranks"] if rf else {}
             t["wins"], t["losses"], t["ties"] = rs.get("wins", 0), rs.get("losses", 0), rs.get("ties", 0)
             t["standing"], t["pf"] = rs.get("standing"), rs.get("pf", 0)
-            t["score"] = round((pw["lineup"] * t["lineupScore"] + pw["bench"] * t["benchScore"] +
+            t["score"] = round((pw["lineup"] * t["lineupScore"] + pw["recent"] * t["recentScore"] + pw["bench"] * t["benchScore"] +
                                 pw["record"] * t["recordScore"] + pw["points"] * t["pointsScore"]) / pw_sum, 1)
             t["avgRank"] = rnd(sum(t["ranks"].values()) / k, 2)
             t["proj"], t["bench"] = rnd(t["proj"], 1), rnd(t["bench"], 1)
@@ -1160,7 +1180,7 @@ def build(workbook, out_dir):
         for i, t in enumerate(lst):
             t["rank"] = i + 1
         power["blocks"].append({"key": bkey, "label": blabel, "firstWeek": w0, "lastWeek": w1,
-                                "weeksPlayed": wks, "weights": pw_pct, "teams": lst})
+                                "weeksPlayed": wks, "recentWeeks": recent_weeks, "weights": pw_pct, "teams": lst})
     write_json(os.path.join(out_dir, "power.json"), power)
 
     # ============ meta ============
