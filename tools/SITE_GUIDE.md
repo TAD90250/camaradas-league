@@ -23,7 +23,7 @@ python fetch_projections.py             (Thursdays: Power Rankings projections)
 python build_owner_sheets.py            (optional -- only if you still use the Excel tabs)
 python export_site_data.py
 ```
-Run `fetch_projections.py` every Thursday before the new week starts: it pulls Sleeper's projected points for every remaining week and each team's current roster into `power_projections.json`, and `export_site_data.py` turns that into the Power Rankings page (games already played never count). The Power score weights are `powerWeights` in `league_settings.json`: `early` (weeks 1-14: lineup 75, bench 5, record 15, points 5) and `late` (Playoffs, weeks 15-17: lineup 100). Then on GitHub: Add file > Upload files, drag the `site/data` folder in, commit.
+Run `fetch_projections.py` every Thursday before the new week starts: it pulls Sleeper's projected points for every remaining week and each team's current roster into `power_projections.json`, and `export_site_data.py` turns that into the Power Rankings page (games already played never count). The Power score weights are `powerWeights` in `league_settings.json`: `early` (weeks 1-14: lineup 65, recent 10, bench 5, record 15, points 5) and `late` (Playoffs, weeks 15-17: lineup 90, recent 10). "Recent" is each team's scoring rank over its last 3 played weeks. Then on GitHub: Add file > Upload files, drag the `site/data` folder in, commit.
 (Changed files are replaced; the site updates in about a minute.)
 
 ## Photos
