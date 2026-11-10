@@ -126,7 +126,8 @@ def main():
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump({"season": season, "fetchedAt": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
                    "field": field, "firstWeek": first_week, "lastWeek": last_week,
-                   "teams": teams, "players": players, "weeks": weeks, "matchups": matchups}, f)
+                   "teams": teams, "players": players, "weeks": weeks, "matchups": matchups,
+                   "leagueId": SLEEPER_SEED_LEAGUE_ID, "rosterOwner": {str(k): v for k, v in roster_owner.items()}}, f)
     print(f"Saved {OUT}")
 
 

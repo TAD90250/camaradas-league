@@ -1209,6 +1209,33 @@ def build(workbook, out_dir):
                              "defaultScope": DEFAULT_RECORDS_SCOPE, "scopes": tw_scopes})
     elif os.path.exists(tw_path):
         os.remove(tw_path)                              # stale file from an earlier week: the home page hides the section
+
+    # ============ live weekly-prize tracker (home page): the page itself reads Sleeper's live scores in the browser ============
+    live_path = os.path.join(out_dir, "live.json")
+    if proj and proj.get("rosterOwner") and proj.get("leagueId"):
+        y_l = latest_year
+        n_l = sum(1 for v in team_rows.values() if v["year"] == y_l)
+        done_l = [w_ for (yy_, w_), lst_ in reg_rows.items() if yy_ == y_l and len(lst_) >= n_l]
+        last_l = max(done_l, default=0)
+        st_l, rank_l = standings_after(y_l, last_l) if last_l else ({}, [])
+        ro_l = {}
+        for rid_, oid_ in proj["rosterOwner"].items():
+            t_ = team_rows.get(f"{y_l}-{oid_}")
+            if t_ and t_["owner"] in slug:
+                ro_l[str(rid_)] = {"slug": slug[t_["owner"]], "nick": nick(t_["owner"])}
+        write_json(live_path, {
+            "season": y_l, "asOf": proj.get("fetchedAt"), "leagueId": proj["leagueId"],
+            "weekHint": int(((proj.get("matchups") or {}).get("week")) or proj.get("firstWeek") or 1),
+            "rosterOwner": ro_l, "players": proj.get("players") or {},
+            "prizes": [{k_: pc_.get(k_) for k_ in ("id", "kind", "pos", "week", "amount", "label", "rule")}
+                       for pc_ in settings["weeklyPayouts"]],
+            "manual": [{"week": m_["week"], "kind": m_["kind"], "winner": m_["winner"]}
+                       for m_ in settings["manualWinners"] if m_["year"] == y_l],
+            "lastDone": last_l,
+            "standings": [{"slug": slug[o_], "nick": nick(o_), "rank": i_ + 1, "w": st_l[o_][0], "l": st_l[o_][1],
+                           "t": st_l[o_][2], "pf": rnd(st_l[o_][3], 1)} for i_, o_ in enumerate(rank_l) if o_ in slug]})
+    elif os.path.exists(live_path):
+        os.remove(live_path)                            # until fetch_projections.py has run once with the live-tracker update
     pr_lineup, pr_bench = {}, {}                       # week -> {tsid: projected points}
     ts_of = {}
     if proj:
