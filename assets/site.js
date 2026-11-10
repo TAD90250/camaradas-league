@@ -6,7 +6,7 @@
     (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
   const NAV = [["index.html", "Home"], ["seasons.html", "Seasons"], ["owners.html", "Owners"], ["alltime.html", "All-Time"],
-    ["records.html", "Records"], ["power.html", "Power"], ["h2h.html", "Head-to-Head"], ["draft.html", "Draft"],
+    ["records.html", "Records"], ["power.html", "Power"], ["h2h.html", "Head-to-Head"], ["draft.html", "Draft"], ["keepers.html", "Keepers"],
     ["payouts.html", "Payouts"], ["money.html", "Money"], ["rules.html", "Rules"], ["photos.html", "Photos 🔒"]];
 
   async function getJSON(path) {
@@ -105,5 +105,14 @@
     return (scopes.find((s) => s.key === q) || scopes.find((s) => s.key === def) || scopes[0]).key;
   };
 
-  window.L = { SCOPE_NOTES, scopePills, pickScope, $, $$, esc, getJSON, rec, pct, num, ownerLink, ordinal, RESULT_BADGE, boot, sortable, chrome, fail };
+  /* keeper table for one owner (entry from data/keepers.json) */
+  function keeperTable(entry, K) {
+    const badge = (st) => st === "ok" ? '<span class="badge blue">Eligible</span>' : st === "pending" ? '<span class="badge gold">Pending</span>' : '<span class="badge out">Not eligible</span>';
+    const rows = entry.players.map((p) => "<tr" + (p.status === "no" ? " class='muted'" : "") + "><td class='l'><b>" + esc(p.name) + "</b> <span class='muted'>" + esc(p.pos) + "</span></td>" +
+      "<td class='l'>" + (p.round ? "Round " + p.round + (p.by ? " <span class='muted'>(" + esc(p.by) + ")</span>" : "") : "<span class='muted'>Undrafted</span>") + "</td>" +
+      "<td><b>" + (p.status === "no" ? "–" : "Round " + p.cost) + "</b></td><td>" + num(p.pts) + "</td><td class='l'>" + badge(p.status) + (p.note ? " <span class='muted' style='font-size:.82rem'>" + esc(p.note) + "</span>" : "") + "</td></tr>").join("");
+    return '<div class="card table-wrap"><table><thead><tr><th class="l">Player</th><th class="l">Drafted in ' + K.season + '</th><th>Round you lose</th><th>Pts</th><th class="l">Status</th></tr></thead><tbody>' + rows + "</tbody></table></div>";
+  }
+
+  window.L = { keeperTable, SCOPE_NOTES, scopePills, pickScope, $, $$, esc, getJSON, rec, pct, num, ownerLink, ordinal, RESULT_BADGE, boot, sortable, chrome, fail };
 })();
