@@ -22,6 +22,7 @@ L.boot("owners.html", "Owner", async (meta) => {
   const slug = new URLSearchParams(location.search).get("o") || meta.owners[0].slug;
   const o = await getJSON("data/owner/" + encodeURIComponent(slug) + ".json");
   let key = L.pickScope(o.scopes, o.defaultScope);
+  const keepP = getJSON("data/keepers.json").catch(() => null);
   function draw() {
   const sc = o.scopes.find((x) => x.key === key);
   $("#onav").innerHTML = meta.owners.map((x) =>
@@ -101,6 +102,13 @@ L.boot("owners.html", "Owner", async (meta) => {
     '<section><h2 class="sec-title">Head-to-head <small>selected games</small></h2><div class="card table-wrap"><table id="h2h">' +
       "<thead><tr><th class='l' data-sort>Opponent</th><th data-sort>Games</th><th data-sort>Record</th><th class='l' data-sort>Win %</th><th data-sort>PF</th><th data-sort>PA</th><th>Playoffs</th></tr></thead><tbody>" + h2hRows + "</tbody></table></div></section>";
   L.sortable($("#h2h"));
+  // keeper list for next year's draft (needs data/keepers.json), shown at the very bottom
+  keepP.then((K) => {
+    const e = K && K.owners.find((x) => x.slug === slug);
+    if (!e || !e.players.length) return;
+    const ok = e.players.filter((p) => p.status === "ok").length;
+    $("#body").insertAdjacentHTML("beforeend", '<section><h2 class="sec-title">Keeper list <small>' + K.draftYear + " draft · " + ok + " eligible · <a href='keepers.html?o=" + encodeURIComponent(slug) + "'>rules and details</a></small></h2>" + L.keeperTable(e, K) + "</section>");
+  });
   }
   draw();
 });

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keepers</title>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<main>
+  <div class="wrap">
+    <div class="owner-nav" id="onav"></div>
+    <div id="warn"></div>
+    <section>
+      <h2 class="sec-title"><span id="kTitle">Keepers</span> <small id="kSub"></small></h2>
+      <div id="kBody"><div class="loading">Loading&hellip;</div></div>
+    </section>
+    <section>
+      <h2 class="sec-title">Keeper rules</h2>
+      <div class="card"><div class="pad">
+        <ul style="margin:0;padding-left:1.2em">
+          <li>The draft runs normally through round 4, then pauses so keepers can be declared.</li>
+          <li>Keeping a player costs the round he was drafted the year before, even if you did not draft him. Drafted before round 5 (rounds 1&ndash;4): you lose your 5th. Drafted after round 10, or not drafted: you lose your 10th.</li>
+          <li>A player must have been on your roster when the season ended.</li>
+          <li>A player who was a keeper in the previous draft cannot be kept again.</li>
+          <li>After week 13, a player you pick up only counts if he starts for you in a real playoff game. The 3rd place, toilet bowl and other consolation games do not count.</li>
+        </ul>
+      </div></div>
+      <p class="note" id="kNote"></p>
+    </section>
+  </div>
+</main>
+<script src="assets/site.js"></script>
+<script>
+L.boot("keepers.html", "Keepers", async (meta) => {
+  const { $, esc, getJSON } = L;
+  let K;
+  try { K = await getJSON("data/keepers.json"); }
+  catch (e) { $("#kBody").innerHTML = "<p class='note'>The keeper list has not been built yet. Run the site update once and it will appear here.</p>"; return; }
+  const want = new URLSearchParams(location.search).get("o");
+  let slug = (K.owners.find((x) => x.slug === want) || K.owners[0]).slug;
+  $("#pageSub").textContent = K.draftYear + " draft · rosters through week " + K.weekThrough;
+  function draw() {
+    const e = K.owners.find((x) => x.slug === slug);
+    $("#onav").innerHTML = K.owners.map((x) => '<a href="keepers.html?o=' + encodeURIComponent(x.slug) + '"' + (x.slug === slug ? ' class="on"' : "") + ">" + esc(x.nick) + "</a>").join("");
+    document.title = e.nick + " keepers · " + meta.leagueName;
+    const ok = e.players.filter((p) => p.status === "ok").length, pend = e.players.filter((p) => p.status === "pending").length;
+    $("#kTitle").textContent = e.nick + "'s keeper list";
+    $("#kSub").textContent = ok + " eligible" + (pend ? " · " + pend + " pending" : "");
+    $("#kBody").innerHTML = L.keeperTable(e, K);
+    $("#warn").innerHTML = K.complete ? "" : '<div class="warn">Live list: it follows each roster as it is now (through week ' + K.weekThrough + '). Rosters can still change, so the final list is set when the season ends.</div>';
+  }
+  $("#onav").addEventListener("click", (ev) => {
+    const a = ev.target.closest("a"); if (!a) return;
+    ev.preventDefault(); slug = new URL(a.href).searchParams.get("o"); history.replaceState(null, "", "?o=" + encodeURIComponent(slug)); draw();
+  });
+  $("#kNote").textContent = "Round you lose: the round in your " + K.draftYear + " draft that the player costs. Pts are points scored this season. Players kept in the " + K.season + " draft: " + K.keptLastDraft.join(", ") + ".";
+  draw();
+});
+</script>
+</body>
+</html>
