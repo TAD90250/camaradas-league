@@ -1,13 +1,22 @@
-# Updates the Camaradas League site twice a week, with no computer of yours involved.
-#   Tuesday  : after Monday night football, pulls the final scores
-#   Thursday : before the new week starts, refreshes scores and Power Rankings projections
+# Updates the Camaradas League site several times a week, with no computer of yours involved.
+#   Monday   10:30 PM : final scores after Monday night football
+#   Thursday  8:00 AM : refresh scores and Power Rankings projections before the new week
+#   Thursday 10:30 PM : after the Thursday night game
+#   Sunday    1:30 PM : after the 10 AM games
+#   Sunday    4:50 PM : after the 1 PM games
+#   Sunday   10:30 PM : after the Sunday night game
+# GitHub reads cron in UTC. The times below are Pacific STANDARD time (UTC-8), which applies from Nov 1.
 # You can also run it by hand: Actions tab > "Update site data" > Run workflow.
 name: Update site data
 
 on:
   schedule:
-    - cron: "0 8 * * 2"     # Tuesday 08:00 UTC  (1 am Pacific in summer, 12 am in winter)
-    - cron: "0 14 * * 4"    # Thursday 14:00 UTC (7 am Pacific in summer, 6 am in winter)
+    - cron: "30 6 * * 2"    # Monday    10:30 PM Pacific (Tuesday 06:30 UTC)
+    - cron: "0 16 * * 4"    # Thursday   8:00 AM Pacific (Thursday 16:00 UTC)
+    - cron: "30 6 * * 5"    # Thursday  10:30 PM Pacific (Friday 06:30 UTC)
+    - cron: "30 21 * * 0"   # Sunday     1:30 PM Pacific (Sunday 21:30 UTC)
+    - cron: "50 0 * * 1"    # Sunday     4:50 PM Pacific (Monday 00:50 UTC)
+    - cron: "30 6 * * 1"    # Sunday    10:30 PM Pacific (Monday 06:30 UTC)
   workflow_dispatch:
 
 permissions:
