@@ -38,6 +38,11 @@
       <p class="note"><a href="seasons.html">Scores, brackets and every season &rarr;</a></p>
     </section>
 
+    <section id="prizewatch" hidden>
+      <h2 class="sec-title"><span id="lvTitle">Weekly prize watch</span></h2>
+      <div id="lvBody"></div>
+    </section>
+
     <section id="thisweek" hidden>
       <h2 class="sec-title"><span id="twTitle">This week's matchups</span> <small id="twSub"></small></h2>
       <div class="pills" id="twPills" role="group" aria-label="Which games count"></div>
@@ -61,6 +66,7 @@
   </div>
 </main>
 <script src="assets/site.js"></script>
+<script src="assets/live.js"></script>
 <script>
 L.boot("index.html", null, async (meta) => {
   const { $, esc, getJSON, rec, ownerLink } = L;
@@ -86,6 +92,9 @@ L.boot("index.html", null, async (meta) => {
     }
   } catch (e) { /* no public photos yet */ }
 
+
+  // weekly prize watch: live leader from Sleeper (needs data/live.json)
+  try { if (window.LiveTracker) LiveTracker.init(L); } catch (e) { /* section stays hidden */ }
 
   // this week's matchups: all-time series and current streak for each pairing
   try {
