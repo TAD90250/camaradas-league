@@ -110,6 +110,8 @@ DEFAULT_SETTINGS = {
     "lowestPenalty": 5,
     "lowestCount": 2,
     "missPlayoffsPenalty": 10,
+    "keepers": {"2026": ["RJ Harvey", "Terry McLaurin", "George Kittle", "Jaylen Warren", "Quinshon Judkins", "Rhamondre Stevenson",
+                         "Alec Pierce", "Blake Corum", "Los Angeles Rams", "Rico Dowdle", "Michael Wilson"]},
     "feeNote": "League fee is $100 plus $71 for the weekly prizes. A hurt or bye-week player left in the lineup costs $20, added to the 1st place prize.",
     "weeklyPayouts": [
         {"id": "undefeated", "kind": "undefeated", "week": None, "amount": 52,
@@ -1236,6 +1238,77 @@ def build(workbook, out_dir):
                            "t": st_l[o_][2], "pf": rnd(st_l[o_][3], 1)} for i_, o_ in enumerate(rank_l) if o_ in slug]})
     elif os.path.exists(live_path):
         os.remove(live_path)                            # until fetch_projections.py has run once with the live-tracker update
+
+    # ============ keeper list for next year's draft (data/keepers.json) ============
+    # Rules: cost = the round the player was drafted this year (before round 5 -> round 5; after round 10 or undrafted -> round 10);
+    # not a keeper in this year's draft; on the roster when the season ends; a player picked up after week KEEPER_LATE_WEEK
+    # only counts if he starts in a real playoff game (3rd-place, toilet bowl and other consolation games do not count).
+    KEEPER_LATE_WEEK = 13
+    y_k = latest_year
+    _dst_last = {str(nm_).split()[-1].lower() for nm_, p_ in players.values() if nm_ and p_ in ("DST", "DEF")}
+    _full = {re.sub(r"[^a-z ]", "", str(nm_).lower().replace("-", " ")).strip() for nm_, p_ in players.values() if nm_ and p_ not in ("DST", "DEF")}
+
+    def kkey(nm_, pos_=None):
+        t_ = " ".join(w_ for w_ in re.sub(r"[^a-z ]", "", str(nm_ or "").lower().replace("-", " ")).split() if w_ not in ("jr", "sr", "ii", "iii", "iv", "v"))
+        last_ = t_.split()[-1] if t_ else ""
+        if pos_ in ("DST", "DEF") or (pos_ is None and last_ in _dst_last and t_ not in _full):
+            return ("dst", last_)
+        return ("p", t_)
+
+    drafted_k = {}                                       # key -> (round, drafter nick)
+    for rd_, pk_, tsid_, nm_ in draft_by_year.get(y_k, []):
+        t_ = team_rows.get(tsid_)
+        drafted_k[kkey(nm_)] = (rd_, nick(t_["owner"]) if t_ and t_["owner"] in slug else None)
+    kept_k = {kkey(n_) for n_ in (settings.get("keepers") or {}).get(str(y_k), [])}
+    by_team_week = defaultdict(lambda: defaultdict(list))   # tsid -> week -> roster rows (this season)
+    for ry_, rw_, rts_, rpid_, rst_, rpts_ in roster:
+        if ry_ == y_k and rts_ in teams:
+            by_team_week[rts_][rw_].append((rpid_, rst_, rpts_))
+    n_k = sum(1 for v_ in team_rows.values() if v_["year"] == y_k)
+    champion_k = any(v_["result"] == "Champion" for v_ in team_rows.values() if v_["year"] == y_k)
+    PLAYOFF_REAL = ("Playoff - Quarterfinal", "Playoff - Semifinal", "Playoff - Championship")
+    keepers_out, last_wk_k = [], 0
+    for tsid_, weeks_ in by_team_week.items():
+        o_ = team_rows[tsid_]["owner"] if tsid_ in team_rows else None
+        if o_ not in slug:
+            continue
+        wl_ = max(weeks_)
+        last_wk_k = max(last_wk_k, wl_)
+        on13 = {x_[0] for x_ in weeks_.get(KEEPER_LATE_WEEK, [])}
+        pts_k = defaultdict(float)
+        started_po = set()
+        for w_, lst_ in weeks_.items():
+            for pid_, st_, pt_ in lst_:
+                pts_k[pid_] += pt_ or 0
+                if st_ and w_ > KEEPER_LATE_WEEK and game_type.get((y_k, w_, tsid_)) in PLAYOFF_REAL:
+                    started_po.add(pid_)
+        plist = []
+        for pid_, st_, pt_ in weeks_[wl_]:
+            nm_, pos_ = pinfo(pid_)
+            if bos.EXCLUDE_K_DST and pos_ in ("K", "DST"):
+                continue
+            key_ = kkey(nm_, pos_)
+            rd_, by_ = drafted_k.get(key_, (None, None))
+            cost = 5 if rd_ is not None and rd_ <= 4 else rd_ if rd_ is not None and rd_ <= 10 else 10
+            status, note = "ok", ""
+            if key_ in kept_k:
+                status, note = "no", f"Was a keeper in the {y_k} draft"
+            elif wl_ > KEEPER_LATE_WEEK and pid_ not in on13:
+                if pid_ in started_po:
+                    note = "Picked up after week %d and started in a playoff game" % KEEPER_LATE_WEEK
+                elif champion_k:
+                    status, note = "no", "Picked up after week %d and did not play in a real playoff game" % KEEPER_LATE_WEEK
+                else:
+                    status, note = "pending", "Picked up after week %d: must start in a real playoff game" % KEEPER_LATE_WEEK
+            plist.append({"name": nm_, "pos": "DST" if pos_ == "DEF" else pos_, "round": rd_, "by": by_, "cost": cost,
+                          "status": status, "note": note, "pts": rnd(pts_k.get(pid_, 0.0), 1)})
+        plist.sort(key=lambda d: ({"ok": 0, "pending": 1, "no": 2}[d["status"]], -d["pts"], d["name"]))
+        keepers_out.append({"slug": slug[o_], "nick": nick(o_), "week": wl_, "players": plist})
+    keepers_out.sort(key=lambda d: d["nick"])
+    write_json(os.path.join(out_dir, "keepers.json"), {
+        "season": y_k, "draftYear": y_k + 1, "complete": champion_k, "lateWeek": KEEPER_LATE_WEEK, "weekThrough": last_wk_k,
+        "asOf": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+        "keptLastDraft": [d_ for d_ in settings.get("keepers", {}).get(str(y_k), [])], "owners": keepers_out})
     pr_lineup, pr_bench = {}, {}                       # week -> {tsid: projected points}
     ts_of = {}
     if proj:
